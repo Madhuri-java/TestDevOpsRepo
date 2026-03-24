@@ -22,7 +22,7 @@ triggers {
       }
     }
 
-        stage('docker-build') {
+        stage('Docker-build') {
             steps {
                 echo "docker build step here..."
                 sh "docker build . -t pythonapp:v1"
