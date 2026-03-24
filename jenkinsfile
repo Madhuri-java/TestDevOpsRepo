@@ -22,16 +22,16 @@ triggers {
       }
     }
 
-        stage('Docker-build') {
+        stage('docker-build') {
             steps {
-                echo "Docker build step here..."
+                echo "docker build step here..."
                 sh "docker build . -t pythonapp:v1"
             }
         }
 
-        stage('Dockercontainer creation') {
+        stage('docker container creation') {
             steps {
-                echo "Running Docker compose here..."
+                echo "running Docker compose here..."
                 sh "docker compose up -d"
             }
         }
