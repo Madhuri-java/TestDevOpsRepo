@@ -7,16 +7,19 @@ triggers {
     stages {
         stage('Clone Repository') {
             steps {
-                git url: 'https://github.com/Madhuri-java/TestDevOpsRepo.git',
-                    branch: 'main'
+                git branch: 'main',
+                    url: 'git@github.com:Madhuri-java/TestDevOpsRepo.git',
+                    credentialsId: 'github-cred'
+
             }
         }
 
-        stage('Build') {
-            steps {
-                echo "Build step here..."
-            }
-        }
+        stage('Check the docker cli') {
+      steps {
+        sh "docker --version"
+        sh "docker ps -a"
+      }
+    }
 
         stage('Test') {
             steps {
