@@ -31,8 +31,21 @@ triggers {
 
         stage('docker container creation') {
             steps {
-                echo "running Docker compose here..."
+                echo "Running Docker compose here..."
                 sh "docker compose up -d"
+            }
+        }
+
+        stage('Cheking output') {
+            steps {
+               sh "docker ps"
+		sh "docker compose ps"
+            }
+        }
+
+        stage('app working') {
+            steps {
+               sh "curl localhost:9010"
             }
         }
     }
