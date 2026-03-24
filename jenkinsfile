@@ -31,8 +31,28 @@ triggers {
 
         stage('docker container creation') {
             steps {
-                echo "running Docker compose here..."
+                echo "Running Docker compose here..."
                 sh "docker compose up -d"
+            }
+        }
+
+        stage('Cheking output') {
+            steps {
+               sh "docker ps"
+		sh "docker compose ps"
+            }
+        }
+
+        stage('app working') {
+            steps {
+               sh "curl localhost:9010"
+            }
+        }
+        stage('Image push') {
+            steps {
+               sh "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 195275631966.dkr.ecr.us-east-1.amazonaws.com"
+               sh "docker tag pythonapp:latest 195275631966.dkr.ecr.us-east-1.amazonaws.com/pythonapp:v1"
+               sh "docker push 195275631966.dkr.ecr.us-east-1.amazonaws.com/pythonapp:v1"
             }
         }
     }
