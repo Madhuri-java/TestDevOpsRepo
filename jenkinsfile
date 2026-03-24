@@ -18,12 +18,21 @@ triggers {
       steps {
         sh "docker --version"
         sh "docker ps -a"
+        sh "docker compose --version"
       }
     }
 
-        stage('Test') {
+        stage('Docker-build') {
             steps {
-                echo "Test step here..."
+                echo "Docker build step here..."
+                sh "docker build . -t pythonapp:v1"
+            }
+        }
+
+        stage('Dockercontainer creation') {
+            steps {
+                echo "Running Docker compose here..."
+                sh "docker compose up -d"
             }
         }
     }
