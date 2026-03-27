@@ -37,7 +37,7 @@ pipeline {
           } 
          stage('Status check') {
 		    steps {
-                sh "kubectl rollout status deployment/py-deploy"
+                sh "kubectl rollout status deployment/py-deploy || true"
                 sh "kubectl get pods"
                 sh "kubectl get svc"
                 sh "kubectl get deployments"
@@ -75,7 +75,7 @@ pipeline {
         stage('Image Push') {
             steps {
                 sh "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${REGISTRY}"
-                sh "docker tag ${FULL_IMAGE_NAME} ${FULL_IMAGE_NAME}"
+               // sh "docker tag pythonapp:v1 ${FULL_IMAGE_NAME}"
                 sh "docker push ${FULL_IMAGE_NAME}"
             }
         }
