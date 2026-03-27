@@ -91,7 +91,7 @@ pipeline {
 		
         stage('Deploy to Kubernetes') {
 		    steps {
-		        sh """sed -i 's|\${FULL_IMAGE_NAME}|${FULL_IMAGE_NAME}|g' py-redis-configmap/py-deploy.yaml"""
+		        sh """sed -i "s|\${FULL_IMAGE_NAME}|${FULL_IMAGE_NAME}|g" py-redis-configmap/py-deploy.yaml"""
 		        sh "kubectl apply -f py-redis-configmap/"
 		    }
 		}
