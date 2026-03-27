@@ -1,45 +1,50 @@
 pipeline {
-    agent {label 'docker' }
-triggers {
+    agent { label 'docker' }
+    triggers {
         pollSCM('H/2 * * * *')   // every 2 minutes
     }
-
+	environment {
+        REGISTRY = '084375591912.dkr.ecr.us-east-1.amazonaws.com'  // e.g., '123456789.dkr.ecr.us-east-1.amazonaws.com' for ECR
+        IMAGE_NAME = 'pythonapp'
+        TAG = "${BUILD_NUMBER}"
+        FULL_IMAGE_NAME = "${REGISTRY}/${IMAGE_NAME}:${TAG}"
+    }
+    
     stages {
         stage('Clone Repository') {
             steps {
-                git branch: 'main',
-                    url: 'git@github.com:Madhuri-java/TestDevOpsRepo.git',
-                    credentialsId: 'github-cred'
-
+               git branch: 'main',
+                    url: 'REPO_URL',
+                    credentialsId: 'github-creds'
             }
         }
 
         stage('Check the docker cli') {
-      steps {
-        sh "docker --version"
-        sh "docker ps -a"
-        sh "docker compose --version"
-      }
-    }
+            steps {
+            sh "docker --version"
+            sh "docker ps -a"
+            sh "docker-compose --version"
+            }
+        }
 
         stage('Docker-Build') {
-            steps {
-                echo "docker build step here..."
-                sh "docker build . -t pythonapp:v1"
-            }
-        }
+		    steps {
+		        echo "Docker Build Step here..."
+		        sh "docker build . -t ${FULL_IMAGE_NAME}"
+		    }
+		}
 
-        stage('docker container creation') {
-            steps {
-                echo "Running Docker compose here..."
-                sh "docker-compose up -d"
-            }
-        }
+        stage('DockerContainer Creation') {
+		    steps {
+		        echo "Running Docker Compose here..."
+		        sh "envsubst < docker-compose.yml | docker-compose -f - up -d"
+		    }
+		}
 
         stage('Cheking output') {
             steps {
-               sh "docker ps"
-		sh "docker compose ps"
+                sh "docker ps"
+		        sh "docker-compose ps"
             }
         }
 
@@ -48,12 +53,38 @@ triggers {
                sh "curl localhost:9010"
             }
         }
-        stage('Image push') {
+
+        stage('Image Push') {
             steps {
-               sh "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 195275631966.dkr.ecr.us-east-1.amazonaws.com"
-               sh "docker tag pythonapp:v1 195275631966.dkr.ecr.us-east-1.amazonaws.com/pythonapp:v1"
-               sh "docker push 195275631966.dkr.ecr.us-east-1.amazonaws.com/pythonapp:v1"
+                sh "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${REGISTRY}"
+                sh "docker tag pythonapp:v1 ${FULL_IMAGE_NAME}"
+                sh "docker push ${FULL_IMAGE_NAME}"
             }
         }
+
+		stage('Check kube env') {
+            steps {
+                sh """
+                minikube status
+                kubectl get nodes
+                """
+            }
+        }
+		
+        stage('Deploy to Kubernetes') {
+		    steps {
+		        sh "sed -i 's|\${FULL_IMAGE_NAME}|${FULL_IMAGE_NAME}|g' py-redis-configmap/py-deploy.yaml"
+		        sh "kubectl apply -f py-redis-configmap/"
+		    }
+		}
+
+        stage('App testing on kube env') {
+            steps {
+               sh "curl 192.168.49.2:30115"
+            }
+        }
+
+
     }
+
 }
