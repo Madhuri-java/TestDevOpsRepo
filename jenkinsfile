@@ -35,6 +35,15 @@ pipeline {
                 sh "docker image rmi -f ${FULL_IMAGE_NAME} || true"
             }
           } 
+         stage('Status check') {
+		    steps {
+                sh "kubectl rollout status deployment/py-deploy"
+                sh "kubectl get pods"
+                sh "kubectl get svc"
+                sh "kubectl get deployments"
+
+		    }
+		}
 
         stage('Docker-Build') {
 		    steps {
