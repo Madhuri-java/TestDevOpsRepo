@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: python-container-cm
-          image: 195275631966.dkr.ecr.us-east-1.amazonaws.com/pythonapp:v1
+          image: ${FULL_IMAGE_NAME}
           ports:
             - containerPort: 8000
           envFrom:
