@@ -14,8 +14,8 @@ pipeline {
         stage('Clone Repository') {
             steps {
                git branch: 'main',
-                    url: 'REPO_URL',
-                    credentialsId: 'github-creds'
+                    url: 'https://github.com/Madhuri-java/TestDevOpsRepo.git',
+                    credentialsId: 'github-cred'
             }
         }
 
