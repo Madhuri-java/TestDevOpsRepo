@@ -4,7 +4,7 @@ pipeline {
         pollSCM('H/2 * * * *')   // every 2 minutes
     }
 	environment {
-        REGISTRY = '084375591912.dkr.ecr.us-east-1.amazonaws.com'  // e.g., '123456789.dkr.ecr.us-east-1.amazonaws.com' for ECR
+        REGISTRY = '195275631966.dkr.ecr.us-east-1.amazonaws.com'  // e.g., '123456789.dkr.ecr.us-east-1.amazonaws.com' for ECR
         IMAGE_NAME = 'pythonapp'
         TAG = "${BUILD_NUMBER}"
         FULL_IMAGE_NAME = "${REGISTRY}/${IMAGE_NAME}:${TAG}"
